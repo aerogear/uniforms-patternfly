@@ -1,5 +1,5 @@
-import React, { Children, HTMLProps, ReactNode } from 'react';
-import { Tooltip, Split, SplitItem, Divider } from '@patternfly/react-core';
+import React, { Children, HTMLProps, ReactNode, isValidElement, cloneElement } from 'react';
+import { Tooltip, Split, SplitItem } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { connectField, filterDOMProps, joinName } from 'uniforms/es5';
 
@@ -36,10 +36,10 @@ function ListField<T>({
   labelCol,
   name,
   showInlineError,
-  value,
   wrapperCol,
   ...props
 }: ListFieldProps<T>) {
+  const value = props.value ?? [];
   return (
     <div {...filterDOMProps(props)}>
       <Split gutter="md">
@@ -60,38 +60,36 @@ function ListField<T>({
         </SplitItem>
         <SplitItem isFilled />
         <SplitItem>
-          <ListAddField name={`${name}.$`} initialCount={initialCount} />{' '}
+          debugger;
+          <ListAddField key="listAddField" name={`${name}.$`} initialCount={initialCount} />{' '}
           <ListDelField name={`${name}.$`} />
         </SplitItem>
       </Split>
 
       <div>
-        {children
-          ? value.map((item: any, index: number) =>
-              Children.map(children as JSX.Element, child =>
-                React.cloneElement(child, {
-                  key: index,
-                  label: '',
-                  name: joinName(
-                    name,
-                    child.props.name && child.props.name.replace('$', index),
-                  ),
-                }),
-              ),
-            )
-          : value.map((item: any, index: number) => (
-              <ListItemField
-                key={index}
-                label={null}
-                name={joinName(name, index)}
-                {...itemProps}
-              />
-            ))}
+      {children
+        ? value.map((item, index) =>
+            Children.map(children, child =>
+              isValidElement(child) && child.props.name
+                ? cloneElement(child, {
+                    key: index,
+                    name: child.props.name.replace('$', '' + index),
+                  })
+                : child,
+            ),
+          )
+        : value.map((item, index) => (
+            <ListItemField
+              key={index}
+              name={'' + index}
+              {...itemProps}
+            />
+          ))}
       </div>
     </div>
   );
 }
 
-export default connectField<ListFieldProps<any>>(ListField, {
-  includeInChain: false,
-});
+ListField.defaultProps = { children: <ListItemField name="$" /> };
+
+export default connectField<ListFieldProps<any>>(ListField);

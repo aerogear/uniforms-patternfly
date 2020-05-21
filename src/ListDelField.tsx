@@ -10,18 +10,17 @@ export type ListDelFieldProps<T> = {
 } & Omit<ButtonProps, 'isDisabled'>;
 
 function ListDel<T>(rawProps: ListDelFieldProps<T>) {
-  const props = useField<ListDelFieldProps<T>, T>(rawProps.name, rawProps, {
-    initialValue: false,
-  })[0];
+  const [props] = useField<ListDelFieldProps<T>, T>(rawProps.name, rawProps);
 
   const nameParts = joinName(null, props.name);
   const parentName = joinName(nameParts.slice(0, -1));
-  const parent = useField<{ minCount?: number }, T[]>(parentName, {})[0];
+  const [parent] = useField<{ minCount?: number }, T[]>(parentName, {});
+  const parentValue = parent.value ?? [];
   if (rawProps.parent) Object.assign(parent, rawProps.parent);
 
   const fieldIndex = +nameParts[nameParts.length - 1];
   const limitNotReached =
-    !props.disabled && !(parent.minCount! >= parent.value!.length);
+    !props.disabled && !(parent.minCount! >= parentValue.length);
 
   return (
     <Button
@@ -30,7 +29,7 @@ function ListDel<T>(rawProps: ListDelFieldProps<T>) {
       style={{ paddingLeft: '0', paddingRight: '0'}}
       onClick={() => {
         if (limitNotReached) {
-          const value = parent.value!.slice();
+          const value = parentValue.slice();
           value.splice(fieldIndex, 1);
           parent.onChange(value);
         }

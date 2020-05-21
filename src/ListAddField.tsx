@@ -13,17 +13,16 @@ export type ListAddFieldProps<T> = {
 } & Omit<ButtonProps, 'isDisabled'>;
 
 function ListAdd<T>(rawProps: ListAddFieldProps<T>) {
-  const props = useField<ListAddFieldProps<T>, T>(rawProps.name, rawProps, {
-    initialValue: false,
-  })[0];
+  const [props] = useField<ListAddFieldProps<T>, T>(rawProps.name, rawProps);
 
   const nameParts = joinName(null, props.name);
   const parentName = joinName(nameParts.slice(0, -1));
-  const parent = useField<{ maxCount?: number }, T[]>(parentName, {})[0];
+  const [parent] = useField<{ maxCount?: number }, T[]>(parentName, {});
+  const parentValue = parent.value ?? [];
   if (rawProps.parent) Object.assign(parent, rawProps.parent);
 
   const limitNotReached =
-    !props.disabled && !(parent.maxCount! <= parent.value!.length);
+    !props.disabled && !(parent.maxCount! <= parentValue.length);
 
   return (
     <Button
@@ -32,7 +31,7 @@ function ListAdd<T>(rawProps: ListAddFieldProps<T>) {
       disabled={!limitNotReached || rawProps.disabled}
       onClick={() => {
         if (limitNotReached)
-          parent.onChange(parent.value!.concat([cloneDeep(props.value!)]));
+          parent.onChange(parentValue.concat([cloneDeep(props.value!)]));
       }}
       {...filterDOMProps(props)}
     >
