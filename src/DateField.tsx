@@ -76,12 +76,19 @@ function DateField(props: DateFieldProps) {
   );
 
   const onTimeChange = useCallback(
-    (time: string) => {
+    (time: string, hours?: number, minutes?: number) => {
       if (props.value) {
         const newDate = new DateConstructor(props.value);
-        if (time !== '') {
-          newDate.setHours(parseInt(time?.split(':')[0]));
-          newDate.setMinutes(parseInt(time?.split(':')[1]?.split(' ')[0]));
+        if (hours && minutes) {
+          newDate.setHours(hours);
+          newDate.setMinutes(minutes);
+        } else if (time !== '') {
+          const localeHours = parseInt(time?.split(':')[0]);
+          const localeMinutes = parseInt(time?.split(':')[1]?.split(' ')[0]);
+          if (!isNaN(localeHours) && !isNaN(localeMinutes)) {
+            newDate.setHours(localeHours);
+            newDate.setMinutes(localeMinutes);
+          }
         }
         props.onChange(newDate);
       }
