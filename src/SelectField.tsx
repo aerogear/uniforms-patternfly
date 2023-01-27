@@ -117,6 +117,19 @@ function SelectField(props: SelectFieldProps) {
     );
   }
 
+  useEffect(() => {
+    if (!props.value) {
+      setSelected([]);
+      setExpanded(false);
+    } else if (Array.isArray(props.value)) {
+      setSelected([...props.value]);
+      setExpanded(false);
+    } else {
+      setSelected(props.value);
+      setExpanded(false);
+    }
+  }, [props.value]);
+
   const [expanded, setExpanded] = useState<boolean>(false);
   const [selected, setSelected] = useState<string | string[] | number | number[] | undefined>([]);
 
