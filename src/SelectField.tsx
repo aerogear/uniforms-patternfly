@@ -209,6 +209,7 @@ function SelectField(props: SelectFieldProps) {
     <Select
       isDisabled={props.disabled}
       id={props.id}
+      ouiaId={props.id}
       variant={
         props.fieldType === Array
           ? SelectVariant.typeaheadMulti
