@@ -1,3 +1,6 @@
+# This repository was moved to kie-tools
+This repository was moved to [kie-tools monorepo](https://github.com/kiegroup/kie-tools/tree/main/packages/uniforms-patternfly). The kie-tools monorepo uses this library in some of their packages. Therefore, the maintainability of the library will be improved, and things such as bug fixing and updating dependencies will be easier as well. This package will still exist in `npm`, and the new package maintained by kie-tools will be `@kie-tools/uniforms-patternfly`.
+
 # Basic usage
 
 `uniforms` is a plugin for React to be able to create dynamic forms with built-in state management and form validation. 
